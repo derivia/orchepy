@@ -1,0 +1,21 @@
+# compiled files
+**/debug/
+**/target/
+
+# remove if creating executable
+# leave for libraries
+**/Cargo.lock
+
+# rustfmt backups
+**/*.rs.bk
+
+# log files
+**/*.log
+
+# msvc generate these debug files
+**/*.pdb
+
+# general notes
+**/*.notes.md
+
+**/.env
