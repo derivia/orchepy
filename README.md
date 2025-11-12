@@ -7,7 +7,7 @@ A lightweight, domain-agnostic event orchestrator for workflow automation.
 ### 1. Create a Workflow
 
 ```bash
-curl -X POST http://localhost:8080/workflows \
+curl -X POST http://localhost:3296/workflows \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Sales Pipeline",
@@ -23,7 +23,7 @@ curl -X POST http://localhost:8080/workflows \
 Automations allow you to execute actions automatically when cases enter or exit specific phases:
 
 ```bash
-curl -X POST http://localhost:8080/workflows \
+curl -X POST http://localhost:3296/workflows \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Invoice Processing",
@@ -93,19 +93,20 @@ curl -X POST http://localhost:8080/workflows \
 ```
 
 Automation Features:
+
 - Triggers: `on_enter` (when case enters phase) or `on_exit` (when case exits phase)
 - Action Types:
-  - `webhook`: HTTP call to external API
-  - `delay`: Wait for specified milliseconds
-  - `conditional`: Execute actions based on conditions (supports AND/OR logic)
-  - `move_to_phase`: Automatically move case to another phase
-  - `set_field`: Update case data fields
+    - `webhook`: HTTP call to external API
+    - `delay`: Wait for specified milliseconds
+    - `conditional`: Execute actions based on conditions (supports AND/OR logic)
+    - `move_to_phase`: Automatically move case to another phase
+    - `set_field`: Update case data fields
 - Webhook Options:
-  - `fields`: Send only specific case fields (if omitted, sends entire case)
-  - `headers`: Custom HTTP headers (e.g., Authorization)
-  - `retry`: Automatic retry with configurable attempts and delay
-  - `on_error`: "stop" (halt execution) or "continue" (log and proceed)
-  - `use_response_from`: Chain actions by using response from previous action
+    - `fields`: Send only specific case fields (if omitted, sends entire case)
+    - `headers`: Custom HTTP headers (e.g., Authorization)
+    - `retry`: Automatic retry with configurable attempts and delay
+    - `on_error`: "stop" (halt execution) or "continue" (log and proceed)
+    - `use_response_from`: Chain actions by using response from previous action
 - Execution: Actions run sequentially in the order defined
 
 ### 1.2. Conditional Actions
@@ -113,7 +114,7 @@ Automation Features:
 Execute different actions based on case data:
 
 ```bash
-curl -X POST http://localhost:8080/workflows \
+curl -X POST http://localhost:3296/workflows \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Approval Workflow",
@@ -166,6 +167,7 @@ Supported Operators: `==`, `!=`, `>`, `<`, `>=`, `<=`, `contains`
 Logical Operators: `AND`, `OR` (for complex conditions)
 
 Simple Condition:
+
 ```json
 {
   "type": "conditional",
@@ -182,7 +184,7 @@ Simple Condition:
 Set time limits for each phase to track compliance:
 
 ```bash
-curl -X POST http://localhost:8080/workflows \
+curl -X POST http://localhost:3296/workflows \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Support Tickets",
@@ -201,7 +203,7 @@ Cases track when they entered each phase via `phase_entered_at` timestamp.
 ### 2. Create a Case
 
 ```bash
-curl -X POST http://localhost:8080/cases \
+curl -X POST http://localhost:3296/cases \
   -H "Content-Type: application/json" \
   -d '{
     "workflow_id": "WORKFLOW_ID_HERE",
@@ -220,7 +222,7 @@ curl -X POST http://localhost:8080/cases \
 ### 3. Move Case Between Phases
 
 ```bash
-curl -X POST http://localhost:8080/cases/CASE_ID/move \
+curl -X PUT http://localhost:3296/cases/CASE_ID/move \
   -H "Content-Type: application/json" \
   -d '{
     "to_phase": "Qualified",
@@ -232,7 +234,7 @@ curl -X POST http://localhost:8080/cases/CASE_ID/move \
 ### 4. Update Case Data
 
 ```bash
-curl -X PATCH http://localhost:8080/cases/CASE_ID/data \
+curl -X PATCH http://localhost:3296/cases/CASE_ID/data \
   -H "Content-Type: application/json" \
   -d '{
     "data": {
@@ -246,23 +248,24 @@ curl -X PATCH http://localhost:8080/cases/CASE_ID/data \
 
 ```bash
 # Get all cases in a specific phase
-curl "http://localhost:8080/cases?workflow_id=WORKFLOW_ID&current_phase=Negotiation"
+curl "http://localhost:3296/cases?workflow_id=WORKFLOW_ID&current_phase=Negotiation"
 
 # Get all cases with filters
-curl "http://localhost:8080/cases?workflow_id=WORKFLOW_ID&status=active&limit=50"
+curl "http://localhost:3296/cases?workflow_id=WORKFLOW_ID&status=active&limit=50"
 ```
 
 ### 6. View Case History
 
 ```bash
-curl http://localhost:8080/cases/CASE_ID/history
+curl http://localhost:3296/cases/CASE_ID/history
 ```
 
 ### 7. Access Kanban Dashboard
 
 Open your browser and navigate to:
+
 ```
-http://localhost:8080/ui
+http://localhost:3296/
 ```
 
 This displays a real-time Kanban board showing all workflows and their cases organized by phases.
@@ -272,6 +275,7 @@ This displays a real-time Kanban board showing all workflows and their cases org
 Orchepy automatically triggers webhooks when cases are created or moved between phases:
 
 Case Created Event:
+
 ```json
 {
   "event_type": "case.created",
@@ -286,6 +290,7 @@ Case Created Event:
 ```
 
 Case Moved Event:
+
 ```json
 {
   "event_type": "case.moved",
@@ -306,7 +311,7 @@ Case Moved Event:
 ```bash
 DATABASE_URL=postgres://user:password@localhost:5432/dbname
 HOST=0.0.0.0
-PORT=8080
+PORT=3296
 RUST_LOG=info,orchepy=debug
 
 WHITELIST_ENABLED=false
@@ -317,6 +322,7 @@ WEBHOOK_ON_CASE_MOVE=true
 ```
 
 Webhook Control:
+
 - `WEBHOOK_ON_CASE_CREATE`: Enable/disable global webhooks when cases are created
 - `WEBHOOK_ON_CASE_MOVE`: Enable/disable global webhooks when cases move between phases
 
@@ -324,7 +330,6 @@ These settings control the workflow's `webhook_url` field. Automations are indep
 
 ## Database Tables
 
-All Orchepy tables are prefixed with `orchepy_`:
 - `orchepy_workflows`: Workflow definitions
 - `orchepy_cases`: Case instances
 - `orchepy_case_history`: Phase transition history
