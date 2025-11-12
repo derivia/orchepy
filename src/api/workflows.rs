@@ -24,15 +24,17 @@ pub async fn create_workflow(
     };
 
     match sqlx::query(
-        "INSERT INTO orchepy_workflows (id, name, phases, initial_phase, webhook_url, description, active, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)"
+        "INSERT INTO orchepy_workflows (id, name, phases, initial_phase, webhook_url, description, automations, sla_config, active, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)"
     )
     .bind(workflow.id)
     .bind(&workflow.name)
-    .bind(to_value(&workflow.phases)?) 
+    .bind(to_value(&workflow.phases)?)
     .bind(&workflow.initial_phase)
     .bind(&workflow.webhook_url)
     .bind(&workflow.description)
+    .bind(to_value(&workflow.automations)?)
+    .bind(to_value(&workflow.sla_config)?)
     .bind(workflow.active)
     .bind(workflow.created_at)
     .bind(workflow.updated_at)
